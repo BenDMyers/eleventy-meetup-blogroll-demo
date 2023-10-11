@@ -1,4 +1,5 @@
 const Parser = require('rss-parser');
+const {AssetCache} = require('@11ty/eleventy-fetch');
 
 const rssParser = new Parser({timeout: 5000});
 
@@ -41,19 +42,32 @@ function byDate(itemA, itemB) {
 	return dateB - dateA;
 }
 
+async function fetchLatestPost(feedUrl) {
+	const asset = new AssetCache(feedUrl);
+
+	if (asset.isCacheValid('1d')) {
+		return await asset.getCachedValue();
+	}
+
+	const feed = await rssParser.parseURL(feedUrl);
+	if (!feed.items.length) {
+		return null;
+	}
+
+	const items = [...feed.items];
+	items.sort(byDate);
+	const latestPost = items[0];
+
+	await asset.save(latestPost, 'json');
+	return latestPost;
+}
+
 module.exports = {
 	eleventyComputed: {
 		async blogList() {
 			return await Promise.all(
 				blogList.map(async (blog) => {
-					const feed = await rssParser.parseURL(blog.feed);
-					if (!feed.items.length) {
-						return null;
-					}
-
-					const items = [...feed.items];
-					items.sort(byDate);
-					const latestPost = items[0];
+					const latestPost = await fetchLatestPost(blog.feed);
 					return {...blog, latestPost};
 				})
 			)
