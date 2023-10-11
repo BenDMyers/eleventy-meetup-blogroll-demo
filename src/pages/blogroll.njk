@@ -1,3 +1,18 @@
 ---
 title: Blogroll
 ---
+
+<ul class="blogroll">
+	{% for blog in blogList %}
+	<li>
+		<p class="blog-title">
+			<a href="{{ blog.url }}">{{ blog.name }}</a>
+		</p>
+		{% if blog.latestPost %}
+		<p class="latest-post">
+			Latest post: <a href="{{ blog.latestPost.link }}">{{ blog.latestPost.title }}</a>
+		</p>
+		{% endif %}
+	</li>
+	{% endfor %}
+</ul>
