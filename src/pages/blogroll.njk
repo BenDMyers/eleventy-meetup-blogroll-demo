@@ -6,6 +6,7 @@ title: Blogroll
 	{% for blog in blogList %}
 	<li>
 		<p class="blog-title">
+			<img src="{{ blog.favicon }}" alt="" />
 			<a href="{{ blog.url }}">{{ blog.name }}</a>
 		</p>
 		{% if blog.latestPost %}

@@ -68,7 +68,10 @@ module.exports = {
 			return await Promise.all(
 				blogList.map(async (blog) => {
 					const latestPost = await fetchLatestPost(blog.feed);
-					return {...blog, latestPost};
+
+					const encodedUri = encodeURIComponent(blog.url);
+					const favicon = `https://v1.indieweb-avatar.11ty.dev/${encodedUri}/`;
+					return {...blog, latestPost, favicon};
 				})
 			)
 		}
